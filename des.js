@@ -1,4 +1,3 @@
-import { sha256 } from 'js-sha256';
 import * as util from './util.js';
 import { keyScheduling } from './keyScheduling.js';
 

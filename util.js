@@ -1,3 +1,10 @@
+export function decodeText(decryptedText) {
+  const spacedBinary = insertSpacesInBinary(hexToBin(decryptedText));
+  const asciiText = binaryStringToAscii(spacedBinary);
+
+  return asciiText
+}
+
 export function stringXOR (str1, str2, len) {
   let xor = Array(len);
   for (let i = 0; i < len; i++) {
@@ -21,11 +28,11 @@ export function splitInputToBlocks(input, blockSize) {
   return res;
 }
 
-export function insertSpacesInBinary(binaryString) {
+function insertSpacesInBinary(binaryString) {
   return binaryString.match(/.{8}/g).join(' ');
 }
 
-export function binaryStringToAscii(binaryString) {
+function binaryStringToAscii(binaryString) {
   const binaryArray = binaryString.split(' ');
   const asciiArray = binaryArray.map(binary => String.fromCharCode(parseInt(binary, 2)));
   return asciiArray.join('');
