@@ -176,7 +176,7 @@ function DES(msg, roundKeys) {
 }
 
 export const encrypt = (msg, key) => DES(msg, keyScheduling(key));
-export const decrypt = (encMsg, key) => DES(encMsg, keyScheduling(key).reverse());
+export const decrypt = (encMsg, key) => DES(util.hexToBin(encMsg), keyScheduling(key).reverse());
 
 
 
