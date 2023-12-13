@@ -1,8 +1,6 @@
-// const rl = require('readline-sync');
-// const sha256 = require('js-sha256').sha256;
-
 import rl from 'readline-sync';
 import { sha256 } from 'js-sha256';
+import * as util from './util.js';
 
 const NUM_OF_LEFT_SHIFTS = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1];
 
@@ -57,79 +55,6 @@ const S = [
   ]
 ];
 
-function unicodeToHex(str) {
-  let res = "";
-  for (let i = 0; i < str.length; i++) {
-    const hex = str[i].charCodeAt().toString(16);
-    res += hex;
-  }
-  return res;
-}
-
-function hexToUnicode(str) {
-  let res = "";
-  for (let i = 0; i < str.length; i+=2) {
-    const unicode = String.fromCharCode(parseInt(str.substr(i, 2), 16));
-    res += unicode;
-  }
-  return res;
-}
-
-const decToBin = (dec) => (parseInt(dec, 10)).toString(2).padStart(4, "0");
-
-export function hexToBin(hex) {
-  hex = hex.toString(16)
-  let res = "";
-  for (let i = 0; i < hex.length; i+=2) {
-    const bin = (parseInt(hex.substr(i, 2), 16).toString(2)).padStart(8, "0");
-    res += bin;
-  }
-  return res;
-}
-
-function binToHex(bin) {
-  bin = bin.toString(2);
-  let res = "";
-  for (let i = 0; i < bin.length; i+=4) {
-    const hex = (parseInt(bin.substr(i, 4), 2).toString(16));
-    res += hex;
-  }
-  return res;
-}
-
-export function unicodeToBinary(unicodeString) {
-  let binaryString = '';
-  for (let i = 0; i < unicodeString.length; i++) {
-    const codePoint = unicodeString.charCodeAt(i);
-    const binaryRepresentation = codePoint.toString(2).padStart(16, '0');
-    binaryString += binaryRepresentation;
-  }
-  return binaryString;
-}
-
-export function binaryStringToAscii(binaryString) {
-  const binaryArray = binaryString.split(' ');
-  const asciiArray = binaryArray.map(binary => String.fromCharCode(parseInt(binary, 2)));
-  return asciiArray.join('');
-}
-
-export function insertSpacesInBinary(binaryString) {
-  return binaryString.match(/.{8}/g).join(' ');
-}
-
-function splitInputToBlocks(input, blockSize) {
-  let res = [];
-  for (let i = 0; i < input.length; i+=blockSize) {
-    let block = input.slice(i, Math.min(i+blockSize, input.length));
-    
-    while (block.length < blockSize) {
-      block += '0';
-    }
-    res.push(block);
-  }
-  return res;
-}
-
 export function getMainKey() {
   // test key - 133457799BBCDFF1
   const key = rl.question('Please enter 64-bit Key in text: ');
@@ -173,8 +98,6 @@ function pc2(key) {
   ]
 }
 
-const shiftString = (str, shift) => str.slice(shift, str.length) + str.slice(0, shift);
-
 function keyScheduling(key) {
   let roundKeys = [];
   
@@ -187,8 +110,8 @@ function keyScheduling(key) {
   let prevC0 = c0.join(''), prevD0 = d0.join('');
 
   NUM_OF_LEFT_SHIFTS.forEach((shift, i) => {
-    c0 = shiftString(prevC0, shift);
-    d0 = shiftString(prevD0, shift);
+    c0 = util.shiftString(prevC0, shift);
+    d0 = util.shiftString(prevD0, shift);
     prevC0 = c0;
     prevD0 = d0;
     let pair = c0 + d0;
@@ -199,10 +122,9 @@ function keyScheduling(key) {
 }
 
 function checkWeakKeys(leftKey, rightKey) {
-  let leftKeyInHex = binToHex(leftKey.join(""));
-  let rightKeyInHex = binToHex(rightKey.join(""));
-  // console.log("L: ", leftKeyInHex);
-  // console.log("R: ", rightKeyInHex);
+  let leftKeyInHex = util.binToHex(leftKey.join(""));
+  let rightKeyInHex = util.binToHex(rightKey.join(""));
+  
   if (leftKeyInHex === "0000000" || leftKeyInHex === "FFFFFFF" &&
   rightKeyInHex === "0000000" || leftKeyInHex === "FFFFFFF") throw new Error(`Weak key is detected: ${leftKeyInHex+rightKeyInHex}`);
 }
@@ -259,20 +181,12 @@ function finalPermutation(block) {
   ]
 }
 
-function stringXOR (str1, str2, len) {
-  let xor = Array(len);
-  for (let i = 0; i < len; i++) {
-    xor[i] = (str1[i] === str2[i] ? 0 : 1);
-  }
-  return xor.join("");
-}
-
 function sBoxesOutput(b) {
   return b.map((group, sBox) => {
     let row = parseInt(group[0] + group[5], 2);
     let col = parseInt(group.slice(1, 5), 2);
 
-    return decToBin(S[sBox][16 * row + col]);
+    return util.decToBin(S[sBox][16 * row + col]);
   }).join("");
 }
 
@@ -292,7 +206,7 @@ function calculateEntropy(data) {
 }
 
 function DES(msg, roundKeys) {
-  const blocks = splitInputToBlocks(msg, 64);
+  const blocks = util.splitInputToBlocks(msg, 64);
   let result = "";
 
   for (let i = 0; i < blocks.length; i++) {
@@ -311,13 +225,13 @@ function DES(msg, roundKeys) {
 
       let expandedR = expansionPermutation(R).join("");
 
-      let xorRK = stringXOR(expandedR, roundKeys[i], 48);
+      let xorRK = util.stringXOR(expandedR, roundKeys[i], 48);
     
-      let bBoxes = splitInputToBlocks(xorRK, 6);
+      let bBoxes = util.splitInputToBlocks(xorRK, 6);
       let sBoxes = sBoxesOutput(bBoxes);
       let finalRoundP = finalRoundPermutation(sBoxes).join("");
 
-      R = stringXOR(prevL, finalRoundP, 32);
+      R = util.stringXOR(prevL, finalRoundP, 32);
 
       let entropyR = calculateEntropy(R);
 
@@ -335,7 +249,7 @@ function DES(msg, roundKeys) {
 
   }
 
-  return binToHex(result).toUpperCase();
+  return util.binToHex(result).toUpperCase();
 }
 
 export const encrypt = (msg, key) => DES(msg, keyScheduling(key));
