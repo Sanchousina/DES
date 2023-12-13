@@ -1,20 +1,10 @@
-import { sha256 } from 'js-sha256';
 import { getMainKey, getMessage } from './input.js';
 import { encrypt, decrypt } from './des.js';
-import { hexToBin, unicodeToBinary, insertSpacesInBinary, binaryStringToAscii } from './util.js';
+import { hexToBin, insertSpacesInBinary, binaryStringToAscii } from './util.js';
 
 try {
   let key = getMainKey();
   let msg = getMessage();
-  //let key = "133457799BBCDFF1";
-
-  //let key = "0101010101010101"; // - weak key
-
-  //key = hexToBin(key);
-  key = hexToBin(sha256.create(key)).slice(0, 64);
-  msg = unicodeToBinary(msg);
-
-  //msg = hexToBin(msg);
 
   let enc = encrypt(msg, key); 
   let dec = decrypt(hexToBin(enc), key);
