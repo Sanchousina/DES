@@ -1,4 +1,3 @@
-import rl from 'readline-sync';
 import { sha256 } from 'js-sha256';
 import * as util from './util.js';
 import { keyScheduling } from './keyScheduling.js';
@@ -53,22 +52,6 @@ const S = [
       2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11
   ]
 ];
-
-export function getMainKey() {
-  // test key - 133457799BBCDFF1
-  const key = rl.question('Please enter 64-bit Key in text: ');
-
-  // if (key.length !== 16) throw new Error('The key has to be 64-bit')
-  // else return key;
-}
-
-export function getMessage() {
-  // test message - Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-  const msg = rl.question('Please enter the message you want to encrypt: ');
-
-  if (!msg) throw new Error("The message shouldn't be empty");
-  else return msg;
-}
 
 function initialPermutation(block) {
   return [

@@ -1,5 +1,6 @@
 import { sha256 } from 'js-sha256';
-import { getMainKey, getMessage, encrypt, decrypt } from './des.js';
+import { getMainKey, getMessage } from './input.js';
+import { encrypt, decrypt } from './des.js';
 import { hexToBin, unicodeToBinary, insertSpacesInBinary, binaryStringToAscii } from './util.js';
 
 try {
