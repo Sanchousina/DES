@@ -1,6 +1,6 @@
-import { getMainKey, getMessage } from './input.js';
-import { encrypt, decrypt } from './des.js';
-import { decodeText } from './util.js';
+import { getMainKey, getMessage } from './des/input.js';
+import { encrypt, decrypt } from './des/des.js';
+import { decodeText } from './des/util.js';
 
 try {
   let key = getMainKey();
