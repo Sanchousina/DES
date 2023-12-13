@@ -1,5 +1,8 @@
-const rl = require('readline-sync');
-const sha256 = require('js-sha256').sha256;
+// const rl = require('readline-sync');
+// const sha256 = require('js-sha256').sha256;
+
+import rl from 'readline-sync';
+import { sha256 } from 'js-sha256';
 
 const NUM_OF_LEFT_SHIFTS = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1];
 
@@ -74,7 +77,7 @@ function hexToUnicode(str) {
 
 const decToBin = (dec) => (parseInt(dec, 10)).toString(2).padStart(4, "0");
 
-function hexToBin(hex) {
+export function hexToBin(hex) {
   hex = hex.toString(16)
   let res = "";
   for (let i = 0; i < hex.length; i+=2) {
@@ -94,7 +97,7 @@ function binToHex(bin) {
   return res;
 }
 
-function unicodeToBinary(unicodeString) {
+export function unicodeToBinary(unicodeString) {
   let binaryString = '';
   for (let i = 0; i < unicodeString.length; i++) {
     const codePoint = unicodeString.charCodeAt(i);
@@ -104,13 +107,13 @@ function unicodeToBinary(unicodeString) {
   return binaryString;
 }
 
-function binaryStringToAscii(binaryString) {
+export function binaryStringToAscii(binaryString) {
   const binaryArray = binaryString.split(' ');
   const asciiArray = binaryArray.map(binary => String.fromCharCode(parseInt(binary, 2)));
   return asciiArray.join('');
 }
 
-function insertSpacesInBinary(binaryString) {
+export function insertSpacesInBinary(binaryString) {
   return binaryString.match(/.{8}/g).join(' ');
 }
 
@@ -127,7 +130,7 @@ function splitInputToBlocks(input, blockSize) {
   return res;
 }
 
-function getMainKey() {
+export function getMainKey() {
   // test key - 133457799BBCDFF1
   const key = rl.question('Please enter 64-bit Key in text: ');
 
@@ -135,7 +138,7 @@ function getMainKey() {
   // else return key;
 }
 
-function getMessage() {
+export function getMessage() {
   // test message - Lorem ipsum dolor sit amet, consetetur sadipscing elitr
   const msg = rl.question('Please enter the message you want to encrypt: ');
 
@@ -304,7 +307,7 @@ function DES(msg, roundKeys) {
     for (let i = 0; i < 16; i++) {
       L = prevR;
 
-      entropyL = calculateEntropy(L);
+      let entropyL = calculateEntropy(L);
 
       let expandedR = expansionPermutation(R).join("");
 
@@ -316,7 +319,7 @@ function DES(msg, roundKeys) {
 
       R = stringXOR(prevL, finalRoundP, 32);
 
-      entropyR = calculateEntropy(R);
+      let entropyR = calculateEntropy(R);
 
       prevL = L;
       prevR = R;
@@ -335,35 +338,35 @@ function DES(msg, roundKeys) {
   return binToHex(result).toUpperCase();
 }
 
-const encode = (msg, key) => DES(msg, keyScheduling(key));
-const decode = (encMsg, key) => DES(encMsg, keyScheduling(key).reverse());
+export const encode = (msg, key) => DES(msg, keyScheduling(key));
+export const decode = (encMsg, key) => DES(encMsg, keyScheduling(key).reverse());
 
-try {
-  let key = getMainKey();
-  let msg = getMessage();
-  //let key = "133457799BBCDFF1";
+// try {
+//   let key = getMainKey();
+//   let msg = getMessage();
+//   //let key = "133457799BBCDFF1";
 
-  //let key = "0101010101010101"; // - weak key
+//   //let key = "0101010101010101"; // - weak key
 
-  //key = hexToBin(key);
-  key = hexToBin(sha256.create(key)).slice(0, 64);
-  msg = unicodeToBinary(msg);
+//   //key = hexToBin(key);
+//   key = hexToBin(sha256.create(key)).slice(0, 64);
+//   msg = unicodeToBinary(msg);
 
-  //msg = hexToBin(msg);
+//   //msg = hexToBin(msg);
 
-  let enc = encode(msg, key); 
-  let dec = decode(hexToBin(enc), key);
+//   let enc = encode(msg, key); 
+//   let dec = decode(hexToBin(enc), key);
 
-  const spacedBinary = insertSpacesInBinary(hexToBin(dec));
-  const asciiText = binaryStringToAscii(spacedBinary);
+//   const spacedBinary = insertSpacesInBinary(hexToBin(dec));
+//   const asciiText = binaryStringToAscii(spacedBinary);
 
-  console.log("Encrypted: ", enc);
+//   console.log("Encrypted: ", enc);
 
-  console.log("Decoded text: ", asciiText);
+//   console.log("Decoded text: ", asciiText);
 
-} catch(err) {
-  console.log(err);
-}
+// } catch(err) {
+//   console.log(err);
+// }
 
 
 
