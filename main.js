@@ -1,9 +1,5 @@
-// const rl = require('readline-sync');
-// const sha256 = require('js-sha256').sha256;
-
-import rl from 'readline-sync';
 import { sha256 } from 'js-sha256';
-import { getMainKey, getMessage, hexToBin, unicodeToBinary, encode, decode, insertSpacesInBinary, binaryStringToAscii } from './des.js';
+import { getMainKey, getMessage, hexToBin, unicodeToBinary, encrypt, decrypt, insertSpacesInBinary, binaryStringToAscii } from './des.js';
 
 try {
   let key = getMainKey();
@@ -18,8 +14,8 @@ try {
 
   //msg = hexToBin(msg);
 
-  let enc = encode(msg, key); 
-  let dec = decode(hexToBin(enc), key);
+  let enc = encrypt(msg, key); 
+  let dec = decrypt(hexToBin(enc), key);
 
   const spacedBinary = insertSpacesInBinary(hexToBin(dec));
   const asciiText = binaryStringToAscii(spacedBinary);

@@ -338,35 +338,9 @@ function DES(msg, roundKeys) {
   return binToHex(result).toUpperCase();
 }
 
-export const encode = (msg, key) => DES(msg, keyScheduling(key));
-export const decode = (encMsg, key) => DES(encMsg, keyScheduling(key).reverse());
+export const encrypt = (msg, key) => DES(msg, keyScheduling(key));
+export const decrypt = (encMsg, key) => DES(encMsg, keyScheduling(key).reverse());
 
-// try {
-//   let key = getMainKey();
-//   let msg = getMessage();
-//   //let key = "133457799BBCDFF1";
-
-//   //let key = "0101010101010101"; // - weak key
-
-//   //key = hexToBin(key);
-//   key = hexToBin(sha256.create(key)).slice(0, 64);
-//   msg = unicodeToBinary(msg);
-
-//   //msg = hexToBin(msg);
-
-//   let enc = encode(msg, key); 
-//   let dec = decode(hexToBin(enc), key);
-
-//   const spacedBinary = insertSpacesInBinary(hexToBin(dec));
-//   const asciiText = binaryStringToAscii(spacedBinary);
-
-//   console.log("Encrypted: ", enc);
-
-//   console.log("Decoded text: ", asciiText);
-
-// } catch(err) {
-//   console.log(err);
-// }
 
 
 
