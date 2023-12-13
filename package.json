@@ -1,0 +1,15 @@
+{
+  "name": "lb1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "des.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "js-sha256": "^0.10.1",
+    "readline-sync": "^1.4.10"
+  }
+}
